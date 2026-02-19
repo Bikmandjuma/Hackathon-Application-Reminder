@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hackathon Reminder App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+
+  <h1 class="text-3xl font-bold text-center mb-8">
+    🚀 Hackathon Application Reminder
+  </h1>
+
+  <div id="appContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+  <!-- Modal -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+    <div class="bg-white p-6 rounded-lg w-96 relative">
+      <button onclick="closeModal()" class="absolute top-2 right-3 text-xl">&times;</button>
+      <h2 id="modalTitle" class="text-xl font-bold mb-3"></h2>
+      <p id="modalDescription" class="text-gray-700"></p>
+    </div>
+  </div>
+
+<script>
+const applications = [
+  {
+    name: "Africa Digital ID Hackathon",
+    country: "CMUA,Online",
+    description: "Calling all university students aspiring to be innovators, developers, and policymakers in Africa! Are you passionate about leveraging technology to drive positive social and economic change? Do you believe digital ID holds the key to unlocking a brighter future for the region? If so, then this hackathon is for you! Hosted by Carnegie Mellon University Africa’s Upanzi Network and Microsave Consulting (MSC), this continental hackathon presents a unique opportunity to shape the future of digital ID in Africa. The hackathon invites Africa’s next thought leaders to identify and develop high-impact use cases for this transformative technology in various sectors such as healthcare, education, agriculture, access to public services and others. The hackathon is organized under the theme “Catalysing growth and properity.",
+    link: "https://africadigitalidhackathon2026.devpost.com/",
+    deadline: "2026-02-22T11:45:00",
+    prize: "Non-cash prize"
+  },
+  {
+    name: "Amazon Nova AI Hackathon",
+    country: "Amazon,Online",
+    description: "Amazon Nova is a portfolio of foundation models and services that deliver frontier intelligence and industry-leading price performance. This is your chance to invent with freedom and build with Nova’s capabilities, including advanced reasoning, tool use, multimodal understanding, voice AI, and UI workflow automation",
+    link: "https://example.com/web3-hackathon",
+    deadline: "2026-03-17T02:00:00",
+    prize: "$40,000"
+  },
+  {
+    name: "Dev_Dash",
+    country: "HackFinity,Online",
+    description: "DevDash 2026 is an intensive global innovation sprint designed to bridge the gap between abstract ideas and deployable technology. Whether you are a solo developer, a designer with a vision, or a startup team, DevDash provides the platform to showcase technical depth and creative problem-solving , this month-long hackathon emphasizes rapid iteration, usability, and impact. We aren't just looking for code; we’re looking for high-performance dashboards, tools, and systems that simplify complexity and drive real-world results",
+    link: "https://example.com/startup-ai",
+    deadline: "2026-03-01T12:00:00",
+    prize : "$10,000"
+  }
+];
+
+const container = document.getElementById("appContainer");
+
+function createCard(app, index) {
+  const shortDesc = app.description.substring(0, 80) + "...";
+
+  return `
+    <div class="bg-white p-5 rounded-xl shadow-md">
+      
+      <div class="flex justify-between items-start mb-2">
+        <h2 class="text-xl font-semibold">${app.name}</h2>
+        <span class="text-sm bg-gray-200 px-2 py-1 rounded">
+          ${app.country}
+        </span>
+      </div>
+
+      <p class="text-gray-600 mb-2">${shortDesc}</p>
+      <p class="text-gray-600 bg-gray-200 rounded text-sm px-1 py-1 mb-2 float-right">Prize : ${app.prize}</p>
+
+
+      <button onclick="openModal(${index})" 
+        class="text-blue-500 mb-2 hover:underline">
+        View More
+      </button>
+
+      <div class="text-red-500 font-bold mb-3" id="countdown-${index}">
+        Calculating...
+      </div>
+
+      <a href="${app.link}" target="_blank"
+        id="apply-btn-${index}"
+        class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+        Apply Now
+      </a>
+    </div>
+  `;
+}
+
+function renderApps() {
+  let cards = "";
+  applications.forEach((app, index) => {
+    cards += createCard(app, index);
+  });
+
+  container.innerHTML = cards;
+
+  applications.forEach((app, index) => {
+    startCountdown(app.deadline, index);
+  });
+}
+
+function startCountdown(deadline, index) {
+  const countdownElement = document.getElementById(`countdown-${index}`);
+  const applyButton = document.getElementById(`apply-btn-${index}`);
+
+  const endTime = new Date(deadline).getTime();
+
+  if (isNaN(endTime)) {
+    countdownElement.innerHTML = "Invalid Date Format";
+    return;
+  }
+
+  const interval = setInterval(() => {
+    const now = Date.now();
+    const distance = endTime - now;
+
+    if (distance <= 0) {
+      countdownElement.innerHTML = "Deadline Passed";
+      countdownElement.classList.replace("text-red-500", "text-gray-500");
+
+      applyButton.classList.replace("bg-blue-500", "bg-gray-400");
+      applyButton.classList.remove("hover:bg-blue-600");
+      applyButton.classList.add("cursor-not-allowed");
+      applyButton.innerText = "Closed";
+      applyButton.removeAttribute("href");
+
+      clearInterval(interval);
+      return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((distance / (1000 * 60)) % 60);
+    const seconds = Math.floor((distance / 1000) % 60);
+
+    countdownElement.innerHTML =
+      `Left: ${days}d:${String(hours).padStart(2,'0')}h:${String(minutes).padStart(2,'0')}m:${String(seconds).padStart(2,'0')}s`;
+
+  }, 1000);
+}
+
+function openModal(index) {
+  document.getElementById("modalTitle").innerText = applications[index].name;
+  document.getElementById("modalDescription").innerText = applications[index].description;
+  document.getElementById("modal").classList.remove("hidden");
+  document.getElementById("modal").classList.add("flex");
+}
+
+function closeModal() {
+  document.getElementById("modal").classList.add("hidden");
+  document.getElementById("modal").classList.remove("flex");
+}
+
+renderApps();
+</script>
+
+</body>
+</html>
