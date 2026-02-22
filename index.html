@@ -80,15 +80,15 @@ function createCard(app, index) {
       </div>
 
       <p class="text-gray-600 mb-2">${shortDesc}</p>
-      <p class="text-gray-600 bg-gray-200 rounded text-sm px-1 py-1 mb-2 float-right">Prize : ${app.prize}</p>
+      <p class="text-gray-600 bg-gray-200 rounded text-sm px-1 py-1 mb-2 float-right"><b>Prize</b> : ${app.prize}</p>
 
 
       <button onclick="openModal(${index})" 
-        class="text-blue-500 mb-2 hover:underline">
+        class="text-blue-400 mb-2 hover:underline">
         View More
       </button>
 
-      <div class="text-red-500 font-bold mb-3" id="countdown-${index}">
+      <div class="text-red-600 font-bold mb-3" id="countdown-${index}">
         Calculating...
       </div>
 
@@ -149,7 +149,7 @@ function startCountdown(deadline, index) {
     const seconds = Math.floor((distance / 1000) % 60);
 
     countdownElement.innerHTML =
-      `Left: ${days}d:${String(hours).padStart(2,'0')}h:${String(minutes).padStart(2,'0')}m:${String(seconds).padStart(2,'0')}s`;
+      `${days}d:${String(hours).padStart(2,'0')}h:${String(minutes).padStart(2,'0')}m:${String(seconds).padStart(2,'0')}s`;
 
   }, 1000);
 }
